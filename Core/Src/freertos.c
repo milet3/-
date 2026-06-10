@@ -1,4 +1,4 @@
-﻿/* USER CODE BEGIN Header */
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * File Name          : freertos.c
@@ -28,29 +28,24 @@
 #include <stdio.h>
 #include "lwip.h"
 #include "lwip/dhcp.h"
-#include "lwip/ip4.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
 /* USER CODE END Variables */
+
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
@@ -59,12 +54,8 @@ const osThreadAttr_t defaultTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
-/* Network monitor task */
-void network_monitor_task(void *argument);
-
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -79,7 +70,6 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -104,13 +94,11 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
-
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -130,6 +118,7 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN StartDefaultTask */
   uint32_t dhcp_timeout = 0;
 
+  /* === Phase 1: Wait for DHCP === */
   for (;;)
   {
     if (netif_is_link_up(&gnetif)) {
@@ -143,12 +132,6 @@ void StartDefaultTask(void *argument)
                  gnetif.hwaddr[0], gnetif.hwaddr[1], gnetif.hwaddr[2],
                  gnetif.hwaddr[3], gnetif.hwaddr[4], gnetif.hwaddr[5]);
           printf("================================================\r\n");
-          /* Start network monitor task */
-          osThreadNew(network_monitor_task, NULL, &(osThreadAttr_t){
-              .name = "netMon",
-              .stack_size = 512,
-              .priority = osPriorityBelowNormal,
-          });
           break;
         }
         else
@@ -165,43 +148,28 @@ void StartDefaultTask(void *argument)
     }
     osDelay(2000);
   }
-  /* USER CODE END StartDefaultTask */
-}
 
-
-/**
-  * @brief  Network connectivity monitor task.
-  *         Runs after DHCP success, periodically checks link and IP validity.
-  */
-void network_monitor_task(void *argument)
-{
+  /* === Phase 2: Network monitoring loop === */
   printf("[NETMON] Network monitor started\r\n");
-
   for (;;)
   {
-    /* Check physical link */
     if (!netif_is_link_up(&gnetif))
     {
       printf("[NETMON] Link DOWN, waiting for cable...\r\n");
-
-      /* Block until link comes back */
       while (!netif_is_link_up(&gnetif))
       {
         osDelay(1000);
       }
-
       printf("[NETMON] Link restored, restarting DHCP...\r\n");
       dhcp_stop(&gnetif);
       dhcp_start(&gnetif);
 
-      /* Wait for DHCP to assign IP again */
       uint32_t wait = 0;
       while (!dhcp_supplied_address(&gnetif) && wait < 30)
       {
         osDelay(2000);
         wait++;
       }
-
       if (dhcp_supplied_address(&gnetif))
       {
         printf("[NETMON] DHCP re-acquired: %s\r\n",
@@ -214,7 +182,6 @@ void network_monitor_task(void *argument)
       continue;
     }
 
-    /* Link is up — check if DHCP lease is still valid */
     if (!dhcp_supplied_address(&gnetif))
     {
       printf("[NETMON] DHCP lease lost, restarting...\r\n");
@@ -222,15 +189,14 @@ void network_monitor_task(void *argument)
       dhcp_start(&gnetif);
     }
 
-    /* Print current status */
     printf("[NETMON] OK | IP: %-15s | Link: UP\r\n",
            ip4addr_ntoa(netif_ip4_addr(&gnetif)));
 
-    osDelay(1000);  /* Check every 1 second instead of 10 */
+    osDelay(10000);
   }
+  /* USER CODE END StartDefaultTask */
 }
+
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-
 /* USER CODE END Application */
-
