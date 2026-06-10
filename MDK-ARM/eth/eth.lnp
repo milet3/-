@@ -9,7 +9,7 @@
 "eth\stm32f4xx_hal_timebase_tim.o"
 "eth\ethernetif.o"
 "eth\lwip.o"
-"eth\lwip_echo.o"
+"eth\tcp_echo.o"
 "eth\stm32f4xx_hal_tim.o"
 "eth\stm32f4xx_hal_tim_ex.o"
 "eth\stm32f4xx_hal_rcc.o"

@@ -1,4 +1,4 @@
-/* USER CODE BEGIN Header */
+﻿/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * File Name          : ethernetif.c
@@ -27,6 +27,7 @@
 #include "lwip/ethip6.h"
 #include "ethernetif.h"
 /* USER CODE BEGIN Include for User BSP */
+#include <stdio.h>
 
 /* USER CODE END Include for User BSP */
 #include <string.h>
@@ -45,7 +46,7 @@
 #define ETHIF_TX_TIMEOUT (2000U)
 /* USER CODE BEGIN OS_THREAD_STACK_SIZE_WITH_RTOS */
 /* Stack size of the interface thread */
-#define INTERFACE_THREAD_STACK_SIZE ( 350 )
+#define INTERFACE_THREAD_STACK_SIZE ( 1024 )
 /* USER CODE END OS_THREAD_STACK_SIZE_WITH_RTOS */
 /* Network interface name */
 #define IFNAME0 's'
@@ -184,7 +185,7 @@ static void low_level_init(struct netif *netif)
 /* USER CODE END low_level_init Variables Initialization for User BSP */
   /* Start ETH HAL Init */
 
-  static uint8_t MACAddr[6];
+   uint8_t MACAddr[6] ;
   heth.Instance = ETH;
   MACAddr[0] = 0x00;
   MACAddr[1] = 0x80;
@@ -205,8 +206,8 @@ static void low_level_init(struct netif *netif)
   hal_eth_init_status = HAL_ETH_Init(&heth);
 
   memset(&TxConfig, 0 , sizeof(ETH_TxPacketConfig));
-  TxConfig.Attributes = ETH_TX_PACKETS_FEATURES_CRCPAD;
-  TxConfig.ChecksumCtrl = ETH_CHECKSUM_DISABLE;
+  TxConfig.Attributes = ETH_TX_PACKETS_FEATURES_CSUM | ETH_TX_PACKETS_FEATURES_CRCPAD;
+  TxConfig.ChecksumCtrl = ETH_CHECKSUM_IPHDR_PAYLOAD_INSERT_PHDR_CALC;
   TxConfig.CRCPadCtrl = ETH_CRC_PAD_INSERT;
 
   /* End ETH HAL Init */
@@ -259,6 +260,8 @@ static void low_level_init(struct netif *netif)
 
   if (hal_eth_init_status == HAL_OK)
   {
+    HAL_ETH_Start_IT(&heth);
+    printf("[OK] HAL_ETH_Start_IT done\r\n");
 /* USER CODE BEGIN low_level_init Code 2 for User BSP */
 
 /* USER CODE END low_level_init Code 2 for User BSP */
@@ -297,9 +300,6 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p)
   struct pbuf *q = NULL;
   err_t errval = ERR_OK;
   ETH_BufferTypeDef Txbuffer[ETH_TX_DESC_CNT] = {0};
-
-  // 仅用于调试：看到有数据发出
-  printf("TX: %d bytes\r\n", p->tot_len);
 
   memset(Txbuffer, 0 , ETH_TX_DESC_CNT*sizeof(ETH_BufferTypeDef));
 
@@ -372,10 +372,7 @@ static struct pbuf * low_level_input(struct netif *netif)
 
   if(RxAllocStatus == RX_ALLOC_OK)
   {
-    if(HAL_ETH_ReadData(&heth, (void **)&p) == HAL_OK)
-    {
-       printf("RX: %d bytes\r\n", p->tot_len);
-    }
+    HAL_ETH_ReadData(&heth, (void **)&p);
   }
 
   return p;
@@ -406,7 +403,6 @@ void ethernetif_input(void* argument)
         {
           if (netif->input( p, netif) != ERR_OK )
           {
-            // printf("LwIP Input Error!\r\n");
             pbuf_free(p);
           }
         }
@@ -494,91 +490,6 @@ err_t ethernetif_init(struct netif *netif)
   return ERR_OK;
 }
 
-void HAL_ETH_MspInit(ETH_HandleTypeDef* ethHandle)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(ethHandle->Instance==ETH)
-  {
-    /* Ethernet clock enable */
-    __HAL_RCC_ETHMAC_CLK_ENABLE();
-    __HAL_RCC_ETHMACTX_CLK_ENABLE();
-    __HAL_RCC_ETHMACRX_CLK_ENABLE();
-
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-
-    /**Ethernet GPIO Configuration
-    PA1     ------> ETH_REF_CLK
-    PA2     ------> ETH_MDIO
-    PC1     ------> ETH_MDC
-    PA7     ------> ETH_CRS_DV
-    PC4     ------> ETH_RXD0
-    PC5     ------> ETH_RXD1
-    PB11     ------> ETH_TX_EN
-    PB12     ------> ETH_TXD0
-    PB13     ------> ETH_TXD1
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_7;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-    /* Peripheral interrupt init */
-    HAL_NVIC_SetPriority(ETH_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(ETH_IRQn);
-    
-    /* 切换到 RMII 模式 */
-    __HAL_RCC_SYSCFG_CLK_ENABLE();
-    SYSCFG->PMC |= SYSCFG_PMC_MII_RMII_SEL;
-  }
-}
-
-void HAL_ETH_MspDeInit(ETH_HandleTypeDef* ethHandle)
-{
-  if(ethHandle->Instance==ETH)
-  {
-    /* Peripheral clock disable */
-    __HAL_RCC_ETHMAC_CLK_DISABLE();
-    __HAL_RCC_ETHMACTX_CLK_DISABLE();
-    __HAL_RCC_ETHMACRX_CLK_DISABLE();
-
-    /**Ethernet GPIO Configuration
-    PA1     ------> ETH_REF_CLK
-    PA2     ------> ETH_MDIO
-    PC1     ------> ETH_MDC
-    PA7     ------> ETH_CRS_DV
-    PC4     ------> ETH_RXD0
-    PC5     ------> ETH_RXD1
-    PB11     ------> ETH_TX_EN
-    PB12     ------> ETH_TXD0
-    PB13     ------> ETH_TXD1
-    */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_7);
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13);
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5);
-
-    /* Peripheral interrupt deinit */
-    HAL_NVIC_DisableIRQ(ETH_IRQn);
-  }
-}
-
 /**
   * @brief  Custom Rx pbuf free callback
   * @param  pbuf: pbuf to be freed
@@ -624,78 +535,64 @@ u32_t sys_now(void)
   */
 void ethernet_link_thread(void* argument)
 {
-  struct netif *netif = (struct netif *) argument;
-  ETH_MACConfigTypeDef MACConf;
-  uint32_t phyreg = 0;
-  uint32_t found_addr = 0xFF;
-  
-  printf("[ETH] Scanning PHY address...\r\n");
-  
-  // 自动扫描 PHY 地址 (0 或 1)
-  for(uint32_t i = 0; i <= 1; i++) {
-    if(HAL_ETH_ReadPHYRegister(&heth, i, 1, &phyreg) == HAL_OK) {
-      if(phyreg != 0xFFFF && phyreg != 0x0000) {
-        found_addr = i;
-        printf("[ETH] Found PHY at address: %d (Reg1: 0x%04X)\r\n", (int)i, (int)phyreg);
-        break;
-      }
-    }
-  }
+  struct netif *netif = (struct netif *)argument;
+  uint32_t phy_reg = 0;
+  uint32_t linkstatus = 0;
+  uint32_t phy_id = 0;
+  uint32_t tick = 0;
 
-  if(found_addr == 0xFF) {
-    printf("[ETH] Error: No PHY detected! Check hardware/wiring.\r\n");
+/* USER CODE BEGIN ETH link init */
+
+/* USER CODE END ETH link init */
+
+  /* Try to read PHY ID to verify MDIO communication */
+  if (HAL_ETH_ReadPHYRegister(&heth, _PHY_ADDRESS, 2, &phy_id) == HAL_OK)
+  {
+    printf("[INFO] PHY ID Reg2 = 0x%04lX (expect 0x0007 for LAN8720A)\r\n", phy_id);
+  }
+  else
+  {
+    printf("[ERR] PHY MDIO read failed! Check PHY address and wiring\r\n");
   }
 
   for(;;)
   {
-    if(found_addr != 0xFF) {
-      if(HAL_ETH_ReadPHYRegister(&heth, found_addr, 1, &phyreg) == HAL_OK)
+    /* Read PHY BSR (Basic Status Register) */
+    if (HAL_ETH_ReadPHYRegister(&heth, _PHY_ADDRESS, PHY_BSR, &phy_reg) == HAL_OK)
+    {
+      if ((phy_reg & PHY_LINKED_STATUS) != 0)
       {
-        // 检查标准寄存器 1 的 Bit 2 (Link Status)
-        uint32_t is_up = (phyreg & 0x0004) ? 1 : 0;
-        
-        // 如果物理状态与协议栈状态不一致，或者是以太网引擎尚未启动
-        if (is_up != (netif_is_link_up(netif) ? 1 : 0))
+        /* Link is up */
+        if (linkstatus == 0)
         {
-          if (is_up)
-          {
-            // 链路连通，读取 LAN8720 特殊状态寄存器 31 获取协商后的速度和双工
-            uint32_t phystatus = 0;
-            HAL_ETH_ReadPHYRegister(&heth, found_addr, 31, &phystatus);
-            
-            HAL_ETH_GetMACConfig(&heth, &MACConf);
-            
-            // LAN8720 Reg 31: Bit 4=Duplex, Bit 3:2=Speed
-            if (phystatus & (1 << 4)) MACConf.DuplexMode = ETH_FULLDUPLEX_MODE;
-            else MACConf.DuplexMode = ETH_HALFDUPLEX_MODE;
-            
-            if (phystatus & (1 << 3)) MACConf.Speed = ETH_SPEED_100M;
-            else MACConf.Speed = ETH_SPEED_10M;
-            
-            HAL_ETH_SetMACConfig(&heth, &MACConf);
-            
-            // 关键步骤：启动以太网接收中断
-            if(HAL_ETH_Start_IT(&heth) == HAL_OK) {
-                netif_set_up(netif);
-                netif_set_link_up(netif);
-                printf("[LINK] LAN8720 Link UP (%s Mbps, %s Duplex)\r\n", 
-                       (MACConf.Speed == ETH_SPEED_100M) ? "100" : "10",
-                       (MACConf.DuplexMode == ETH_FULLDUPLEX_MODE) ? "Full" : "Half");
-            } else {
-                printf("[ETH] Error: Failed to start ETH engine!\r\n");
-            }
-          }
-          else
-          {
-            HAL_ETH_Stop_IT(&heth);
-            netif_set_down(netif);
-            netif_set_link_down(netif);
-            printf("[LINK] LAN8720 Link DOWN\r\n");
-          }
+          linkstatus = 1;
+          netif_set_link_up(netif);
+          printf("[OK] ETH Link UP!\r\n");
+        }
+      }
+      else
+      {
+        /* Link is down */
+        if (linkstatus == 1)
+        {
+          linkstatus = 0;
+          netif_set_link_down(netif);
+          printf("[WARN] ETH Link DOWN\r\n");
         }
       }
     }
-    osDelay(1000);
+    else
+    {
+      if (tick % 50 == 0)
+        printf("[ERR] PHY read failed\r\n");
+    }
+
+/* USER CODE BEGIN ETH link Thread core code for User BSP */
+
+/* USER CODE END ETH link Thread core code for User BSP */
+
+    tick++;
+    osDelay(100);
   }
 }
 

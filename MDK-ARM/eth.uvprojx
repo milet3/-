@@ -450,9 +450,9 @@
               <FilePath>../LWIP/App/lwip.c</FilePath>
             </File>
             <File>
-              <FileName>lwip_echo.c</FileName>
+              <FileName>TCP_ECHO.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\lwip_echo.c</FilePath>
+              <FilePath>.\TCP_ECHO.c</FilePath>
             </File>
           </Files>
         </Group>

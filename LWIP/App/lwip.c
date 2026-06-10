@@ -1,4 +1,4 @@
-/* USER CODE BEGIN Header */
+﻿/* USER CODE BEGIN Header */
 /**
  ******************************************************************************
   * File Name          : LWIP.c
@@ -25,6 +25,7 @@
 #if defined ( __CC_ARM )  /* MDK ARM Compiler */
 #include "lwip/sio.h"
 #endif /* MDK ARM Compiler */
+#include "lwip/dhcp.h"
 #include "ethernetif.h"
 #include <string.h>
 
@@ -62,10 +63,10 @@ void MX_LWIP_Init(void)
   /* Initialize the LwIP stack with RTOS */
   tcpip_init( NULL, NULL );
 
-  /* IP addresses initialization with DHCP (IPv4) */
-  ipaddr.addr = 0;
-  netmask.addr = 0;
-  gw.addr = 0;
+  /* IP addresses initialization with default 0.0.0.0 for DHCP */
+  IP4_ADDR(&ipaddr, 0, 0, 0, 0);
+  IP4_ADDR(&netmask, 0, 0, 0, 0);
+  IP4_ADDR(&gw, 0, 0, 0, 0);
 
   /* add the network interface (IPv4/IPv6) with RTOS */
   netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &tcpip_input);
@@ -75,7 +76,7 @@ void MX_LWIP_Init(void)
 
   /* We must always bring the network interface up connection or not... */
   netif_set_up(&gnetif);
-  netif_set_link_down(&gnetif);
+
 
   /* Set the link callback function, this function is called on change of link status*/
   netif_set_link_callback(&gnetif, ethernet_link_status_updated);
@@ -88,9 +89,6 @@ void MX_LWIP_Init(void)
   attributes.priority = osPriorityBelowNormal;
   osThreadNew(ethernet_link_thread, &gnetif, &attributes);
 /* USER CODE END H7_OS_THREAD_NEW_CMSIS_RTOS_V2 */
-
-  /* Start DHCP negotiation for a network interface (IPv4) */
-  dhcp_start(&gnetif);
 
 /* USER CODE BEGIN 3 */
 
@@ -114,11 +112,18 @@ static void ethernet_link_status_updated(struct netif *netif)
   if (netif_is_up(netif))
   {
 /* USER CODE BEGIN 5 */
+    printf("[LINK] Ethernet Link UP\r\n");
+    dhcp_stop(netif);
+    /* Restart DHCP to (re)acquire IP */
+    dhcp_start(netif);
 /* USER CODE END 5 */
   }
   else /* netif is down */
   {
 /* USER CODE BEGIN 6 */
+    printf("[LINK] Ethernet Link DOWN\r\n");
+    /* Stop DHCP, IP is no longer valid */
+    dhcp_stop(netif);
 /* USER CODE END 6 */
   }
 }

@@ -1,4 +1,4 @@
-/* USER CODE BEGIN Header */
+﻿/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : main.c
@@ -25,6 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -91,9 +92,12 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
+
   /* USER CODE BEGIN 2 */
-  printf("\r\n\r\n--- STM32F407 Ethernet Project Start ---\r\n");
+  printf("\r\n=== System Boot ===\r\n");
+  printf("[OK] USART1 ready\r\n");
   /* USER CODE END 2 */
+
 
   /* Init scheduler */
   osKernelInitialize();
@@ -102,6 +106,7 @@ int main(void)
   MX_FREERTOS_Init();
 
   /* Start scheduler */
+  printf("[OK] Starting FreeRTOS kernel...\r\n");
   osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
@@ -138,8 +143,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 336;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  RCC_OscInitStruct.PLL.PLLN = 168;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -195,6 +200,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
+  printf("[ERR] Error_Handler called!\r\n");
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
