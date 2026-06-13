@@ -1,0 +1,15 @@
+eth\mps_trace.o: ..\Middlewares\mbedtls\library\mps_trace.c
+eth\mps_trace.o: ..\Middlewares\mbedtls\library\common.h
+eth\mps_trace.o: ..\Middlewares\mbedtls\include\mbedtls/build_info.h
+eth\mps_trace.o: ..\Middlewares\mbedtls\include\mbedtls/mbedtls_config.h
+eth\mps_trace.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_legacy_crypto.h
+eth\mps_trace.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_x509.h
+eth\mps_trace.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_ssl.h
+eth\mps_trace.o: ..\Middlewares\mbedtls\include\mbedtls/check_config.h
+eth\mps_trace.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+eth\mps_trace.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+eth\mps_trace.o: ..\Middlewares\mbedtls\library\alignment.h
+eth\mps_trace.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+eth\mps_trace.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+eth\mps_trace.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\assert.h
+eth\mps_trace.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h

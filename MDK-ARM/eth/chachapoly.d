@@ -1,0 +1,15 @@
+eth\chachapoly.o: ..\Middlewares\mbedtls\library\chachapoly.c
+eth\chachapoly.o: ..\Middlewares\mbedtls\library\common.h
+eth\chachapoly.o: ..\Middlewares\mbedtls\include\mbedtls/build_info.h
+eth\chachapoly.o: ..\Middlewares\mbedtls\include\mbedtls/mbedtls_config.h
+eth\chachapoly.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_legacy_crypto.h
+eth\chachapoly.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_x509.h
+eth\chachapoly.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_ssl.h
+eth\chachapoly.o: ..\Middlewares\mbedtls\include\mbedtls/check_config.h
+eth\chachapoly.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+eth\chachapoly.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+eth\chachapoly.o: ..\Middlewares\mbedtls\library\alignment.h
+eth\chachapoly.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+eth\chachapoly.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+eth\chachapoly.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\assert.h
+eth\chachapoly.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h

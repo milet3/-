@@ -1,0 +1,15 @@
+eth\bignum_mod.o: ..\Middlewares\mbedtls\library\bignum_mod.c
+eth\bignum_mod.o: ..\Middlewares\mbedtls\library\common.h
+eth\bignum_mod.o: ..\Middlewares\mbedtls\include\mbedtls/build_info.h
+eth\bignum_mod.o: ..\Middlewares\mbedtls\include\mbedtls/mbedtls_config.h
+eth\bignum_mod.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_legacy_crypto.h
+eth\bignum_mod.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_x509.h
+eth\bignum_mod.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_ssl.h
+eth\bignum_mod.o: ..\Middlewares\mbedtls\include\mbedtls/check_config.h
+eth\bignum_mod.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+eth\bignum_mod.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+eth\bignum_mod.o: ..\Middlewares\mbedtls\library\alignment.h
+eth\bignum_mod.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+eth\bignum_mod.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+eth\bignum_mod.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\assert.h
+eth\bignum_mod.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h

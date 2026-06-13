@@ -1,0 +1,15 @@
+eth\pkwrite.o: ..\Middlewares\mbedtls\library\pkwrite.c
+eth\pkwrite.o: ..\Middlewares\mbedtls\library\common.h
+eth\pkwrite.o: ..\Middlewares\mbedtls\include\mbedtls/build_info.h
+eth\pkwrite.o: ..\Middlewares\mbedtls\include\mbedtls/mbedtls_config.h
+eth\pkwrite.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_legacy_crypto.h
+eth\pkwrite.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_x509.h
+eth\pkwrite.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_ssl.h
+eth\pkwrite.o: ..\Middlewares\mbedtls\include\mbedtls/check_config.h
+eth\pkwrite.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+eth\pkwrite.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+eth\pkwrite.o: ..\Middlewares\mbedtls\library\alignment.h
+eth\pkwrite.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+eth\pkwrite.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+eth\pkwrite.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\assert.h
+eth\pkwrite.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h

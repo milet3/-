@@ -1,0 +1,15 @@
+eth\version_features.o: ..\Middlewares\mbedtls\library\version_features.c
+eth\version_features.o: ..\Middlewares\mbedtls\library\common.h
+eth\version_features.o: ..\Middlewares\mbedtls\include\mbedtls/build_info.h
+eth\version_features.o: ..\Middlewares\mbedtls\include\mbedtls/mbedtls_config.h
+eth\version_features.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_legacy_crypto.h
+eth\version_features.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_x509.h
+eth\version_features.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_ssl.h
+eth\version_features.o: ..\Middlewares\mbedtls\include\mbedtls/check_config.h
+eth\version_features.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+eth\version_features.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+eth\version_features.o: ..\Middlewares\mbedtls\library\alignment.h
+eth\version_features.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+eth\version_features.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+eth\version_features.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\assert.h
+eth\version_features.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h

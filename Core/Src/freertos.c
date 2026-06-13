@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include "lwip.h"
 #include "lwip/dhcp.h"
+#include "dns_server.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -132,6 +133,8 @@ void StartDefaultTask(void *argument)
                  gnetif.hwaddr[0], gnetif.hwaddr[1], gnetif.hwaddr[2],
                  gnetif.hwaddr[3], gnetif.hwaddr[4], gnetif.hwaddr[5]);
           printf("================================================\r\n");
+           dns_server_start();
+          http_server_start();
           break;
         }
         else
@@ -189,8 +192,14 @@ void StartDefaultTask(void *argument)
       dhcp_start(&gnetif);
     }
 
-    printf("[NETMON] OK | IP: %-15s | Link: UP\r\n",
-           ip4addr_ntoa(netif_ip4_addr(&gnetif)));
+    /* Print status every 60 seconds (6 cycles * 10s) to reduce UART load */
+    static uint32_t mon_cycle = 0;
+    if (++mon_cycle >= 6)
+    {
+      printf("[NETMON] OK | IP: %-15s | Link: UP\r\n",
+             ip4addr_ntoa(netif_ip4_addr(&gnetif)));
+      mon_cycle = 0;
+    }
 
     osDelay(10000);
   }

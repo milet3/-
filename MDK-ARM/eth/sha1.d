@@ -1,0 +1,15 @@
+eth\sha1.o: ..\Middlewares\mbedtls\library\sha1.c
+eth\sha1.o: ..\Middlewares\mbedtls\library\common.h
+eth\sha1.o: ..\Middlewares\mbedtls\include\mbedtls/build_info.h
+eth\sha1.o: ..\Middlewares\mbedtls\include\mbedtls/mbedtls_config.h
+eth\sha1.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_legacy_crypto.h
+eth\sha1.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_x509.h
+eth\sha1.o: ..\Middlewares\mbedtls\include\mbedtls/config_adjust_ssl.h
+eth\sha1.o: ..\Middlewares\mbedtls\include\mbedtls/check_config.h
+eth\sha1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+eth\sha1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+eth\sha1.o: ..\Middlewares\mbedtls\library\alignment.h
+eth\sha1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+eth\sha1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+eth\sha1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\assert.h
+eth\sha1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h

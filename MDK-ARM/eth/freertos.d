@@ -90,3 +90,4 @@ eth\freertos.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/sys.h
 eth\freertos.o: ../Middlewares/Third_Party/LwIP/system/arch/sys_arch.h
 eth\freertos.o: ../LWIP/Target/ethernetif.h
 eth\freertos.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/tcpip.h
+eth\freertos.o: ../LWIP/App/dns_server.h
